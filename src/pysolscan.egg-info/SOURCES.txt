@@ -1,0 +1,10 @@
+LICENSE
+README.md
+setup.cfg
+setup.py
+src/pysolscan/__init__.py
+src/pysolscan/solscan.py
+src/pysolscan.egg-info/PKG-INFO
+src/pysolscan.egg-info/SOURCES.txt
+src/pysolscan.egg-info/dependency_links.txt
+src/pysolscan.egg-info/top_level.txt
