@@ -7,7 +7,19 @@ def buildurl(param:dict=None,path=str): # Common function to assemble request ur
             }
         req = request('GET','https://public-api.solscan.io'+path,params=param,headers=header)
         return req.json()
-    
+def parameter_filter(param:dict):
+    for key, value in list(param.items()):
+        if isinstance(value, dict):
+            parameter_filter(value)
+        elif value is None:
+            del param[key]
+        elif isinstance(value, list):
+            for v_i in value:
+                if isinstance(v_i, dict):
+                    parameter_filter(v_i)
+
+    return param
+
     # Related-to : https://public-api.solscan.io/block/last?limit=10
 def get_last_block(limit:int=10):
         if isinstance(limit,int) == True:
@@ -62,11 +74,8 @@ def get_account_token(account:str=None):
     # Related-to : https://public-api.solscan.io/account/transactions?account={{accountID}}&beforeHash={{beforeHash}}&limit=10
 def get_account_transaction(account:str=None,beforeHash:str=None,limit:int=10):
         if account is not None:
-            param = {"account":account,"beforeHash":beforeHash,"limit":limit}
-            if param['beforeHash'] == None:
-                del param['beforeHash']
             if isinstance(limit,int) == True:
-                    result = buildurl(param=param,path='/account/transactions')
+                    result = buildurl(param=parameter_filter({"account":account,"beforeHash":beforeHash,"limit":limit}),path='/account/transactions')
                     return result
             else:
                     return 'Limit is not Integer'
@@ -84,12 +93,7 @@ def get_account_stakeAccounts(account:str=None):
     # Related-to : https://public-api.solscan.io/account/splTransfers?account={{accountID}}&offset=0&limit=10
 def get_account_splTransfers(account:str=None,limit:int=10,offset:int=0,fromTime:int=None,toTime:int=None):
         if account is not None:
-            param = {"account":account,"fromTime":fromTime,"toTime":toTime,"limit":limit,"offset":offset}
-            if param['toTime'] == None:
-                del param['toTime'] 
-            if param['fromTime'] == None:
-                del param['fromTime'] 
-            result = buildurl(param=param,path='/account/splTransfers')
+            result = buildurl(param=parameter_filter({"account":account,"fromTime":fromTime,"toTime":toTime,"limit":limit,"offset":offset}),path='/account/splTransfers')
             return result
         else:
             return 'Account not Specified'
@@ -97,12 +101,7 @@ def get_account_splTransfers(account:str=None,limit:int=10,offset:int=0,fromTime
     # Related-to : https://public-api.solscan.io/account/solTransfers?account={{accountID}}&offset=0&limit=10
 def get_account_solTransfers(account:str=None,limit:int=10,offset:int=0,fromTime:int=None,toTime:int=None):
         if account is not None:
-            param = {"account":account,"fromTime":fromTime,"toTime":toTime,"limit":limit,"offset":offset}
-            if param['toTime'] == None:
-                del param['toTime'] 
-            if param['fromTime'] == None:
-                del param['fromTime'] 
-            result = buildurl(param=param,path='/account/solTransfers')
+            result = buildurl(param=parameter_filter({"account":account,"fromTime":fromTime,"toTime":toTime,"limit":limit,"offset":offset}),path='/account/solTransfers')
             return result
         else:
             return 'Account not Specified'
@@ -110,12 +109,7 @@ def get_account_solTransfers(account:str=None,limit:int=10,offset:int=0,fromTime
     # Related-to : https://public-api.solscan.io/account/exportTransactions?account={{accountID}}&type={{tokenchange|solTransfers|all}}&fromTime={{timestamp}}&toTime={{timestamp}}
 def get_account_exportTransactions(account:str=None,type:str='all',fromTime:int=None,toTime:int=None):
         if account is not None:
-            param = {"account":account,"fromTime":fromTime,"toTime":toTime,"type":type}
-            if param['toTime'] == None:
-                del param['toTime'] 
-            if param['fromTime'] == None:
-                del param['fromTime'] 
-            result = buildurl(param=param,path='/account/exportTransactions')
+            result = buildurl(param=parameter_filter({"account":account,"fromTime":fromTime,"toTime":toTime,"type":type}),path='/account/exportTransactions')
             return result
         else:
             return 'Account & FromTime (Timestamp) & ToTime (Timestamp) & Type is required'
